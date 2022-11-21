@@ -8,8 +8,6 @@
 
 char IOmap[4096];
 int expectedWKC;
-boolean needlf;
-boolean inOP;
 
 
 int slave_config(uint16 slave){
@@ -62,10 +60,8 @@ int slave_config(uint16 slave){
 }
 
 
-void setup(char *ifname){
+int setup(char *ifname){
     int i, chk, slc;
-    needlf = FALSE;
-    inOP = FALSE;
 
     printf("Starting simple test\n");
 
@@ -115,7 +111,7 @@ void setup(char *ifname){
 
             if (ec_slave[0].state == EC_STATE_OPERATIONAL){
                 printf("Operational state reached for all slaves.\n");
-                inOP = TRUE;
+                return 1;
             }
             else{
 
@@ -138,6 +134,7 @@ void setup(char *ifname){
     else{
         printf("No socket connection on %s\nExecute as root\n",ifname);
     }
+    exit(-1);
 }
 
 

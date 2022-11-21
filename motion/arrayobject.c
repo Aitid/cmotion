@@ -81,7 +81,7 @@ void PyArrayObject_Free(PyArrayObject_coordinates *py_arr) {
      * удаляем матрицу из память 
      */
 
-    for (int i; i < py_arr->shape[0]; i++)
+    for (int i = 0; i < py_arr->shape[0]; i++)
     {
         free(py_arr->axis[i]);
     }
