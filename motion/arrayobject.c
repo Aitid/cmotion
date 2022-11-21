@@ -8,7 +8,7 @@ void create_array(PyArrayObject_coordinates *py_arr, int row, int col){
      * 2D матрица, где порядковый номер строки соответствует номеру привода/slave
      * В колонке хрониться кол-во пульсов на привод
      *
-     * Например shape: 4 X 6
+     * Например shape: 5 X 7
      *
      *     C0 C1 C2 C3 C4 C5 C6
      * R0 |--|--|--|--|--|--|--|
@@ -17,8 +17,8 @@ void create_array(PyArrayObject_coordinates *py_arr, int row, int col){
      * R3 |--|--|--|--|--|--|--|
      * R4 |--|--|--|--|--|--|--|
      * 
-     * shape[0] = 4 - кол-во приводов/осей
-     * shape[1] = 6 - кол-во TARGETs 
+     * shape[0] = 5 - кол-во приводов/осей
+     * shape[1] = 7 - кол-во TARGETs 
      *
      */
 
