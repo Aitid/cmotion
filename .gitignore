@@ -1,4 +1,5 @@
 build/
+tags
 # Prerequisites
 *.d
 

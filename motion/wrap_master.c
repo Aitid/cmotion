@@ -73,7 +73,7 @@ int setup(char *ifname){
         if ( ec_config_init(FALSE) > 0 ){
             printf("%d slaves found and configured.\n",ec_slavecount);
 
-            if(ec_slavecount > 1) {
+            if(ec_slavecount >= 1) {
 
                 ec_configdc();
 
