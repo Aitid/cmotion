@@ -9,16 +9,16 @@
 PyArrayObject_coordinates generated_pulse(){
 
     PyArrayObject_coordinates points;
-    create_array(&points, 2, 1001);
-    int p[] = {0, 0};
+    create_array(&points, 3, 1001);
+    int p[] = {0, 0, 0};
     // int p[] = {0};
-    add_column_array(&points, p, 2);
+    add_column_array(&points, p, 3);
 
     for (int i = 0; i < 1000; i++){
         // int p[] = {(int) (3000.0 * sin(i) + 1000), (int) (1000.0 * sin(i) + 1000)};
-        int p[] = {i * 1000, i * 1000};
+        int p[] = {-i * 100, -i * 100, -i * 100};
         // int p[] = {i * 1000};
-        add_column_array(&points, p, 2);
+        add_column_array(&points, p, 3);
     }
 
     return points;

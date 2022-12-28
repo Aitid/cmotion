@@ -141,8 +141,11 @@ int setup(char *ifname){
 int enable_csp_mode(){
     outPDO *out;
 
+    int8 function_value = 5; /* 5 - Emergency stop signal */
+
     for(int slc = 1; slc <= ec_slavecount; slc++) {
         out = (outPDO*) ec_slave[slc].outputs;
+        ec_SDOwrite(slc, 0x2007, 0x01, FALSE, sizeof(function_value), &function_value, EC_TIMEOUTSAFE);
 
         out->cntrl_word = 0b00110;
         out->operation_mode = 8;
