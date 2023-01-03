@@ -103,8 +103,6 @@ int setup(char *ifname, int32 cycletime){
                 return 1;
             }
             else{
-
-                printf("Not all slaves reached operational state.\n");
                 return -1;
                 /*
                 ec_readstate();
@@ -120,12 +118,10 @@ int setup(char *ifname, int32 cycletime){
             }
         }
         else{
-            printf("No slaves found!\n");
             return -2;
         }
     }
     else{
-        printf("No socket connection on %s\nExecute as root\n",ifname);
         return -3;
     }
     return -4;
