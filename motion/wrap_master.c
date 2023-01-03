@@ -11,7 +11,6 @@ int expectedWKC;
 
 
 int slave_config(uint16 slave){
-    printf("Slave is %d\n", slave);
     int8 zero = 0;
     int8 total_1600 = 7;
     CIA402_Object_address map_1600[7] = {
@@ -155,12 +154,9 @@ int enable_csp_mode(){
 
 
 void complete(){
-    printf("\nRequest init state for all slaves\n");
     ec_slave[0].state = EC_STATE_INIT;
     /* request INIT state for all slaves */
     ec_writestate(0);
-
-    printf("End simple test, close socket\n");
     /* stop SOEM, close socket */
     ec_close();
 }
