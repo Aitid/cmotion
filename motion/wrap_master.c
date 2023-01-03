@@ -54,24 +54,18 @@ int slave_config(uint16 slave){
     ec_SDOwrite(slave, TxPDO_ASSIGN, 0x01, TRUE, sizeof(map_1c13), &map_1c13, EC_TIMEOUTSAFE);
     ec_SDOwrite(slave, TxPDO_ASSIGN, 0x00, FALSE, sizeof(total_1c13), &total_1c13, EC_TIMEOUTSAFE);
 
-    ec_dcsync0(slave, TRUE, 22000000, 0);
-
     return 1;
 }
 
 
-int setup(char *ifname){
-    int i, chk, slc;
-
-    printf("Starting simple test\n");
+int setup(char *ifname, int32 cycletime){
+    int chk, slc;
 
     /* initialise SOEM, bind socket to ifname */
     if (ec_init(ifname)){
 
-        printf("ec_init on %s succeeded.\n",ifname);
         /* find and auto-config slaves */
         if ( ec_config_init(FALSE) > 0 ){
-            printf("%d slaves found and configured.\n",ec_slavecount);
 
             if(ec_slavecount >= 1) {
 
@@ -79,19 +73,17 @@ int setup(char *ifname){
 
                 for(slc = 1; slc <= ec_slavecount; slc++) {
                     ec_slave[slc].PO2SOconfig = &slave_config;
+                    ec_dcsync0(slc, TRUE, cycletime, 0);
                 }
             }
 
             ec_config_map(&IOmap);
 
-            printf("Slaves mapped, state to SAFE_OP.\n");
             /* wait for all slaves to reach SAFE_OP state */
             ec_statecheck(0, EC_STATE_SAFE_OP,  EC_TIMEOUTSTATE * 4);
 
             /* read indevidual slave state and store in ec_slave[] */
-            printf("Request operational state for all slaves\n");
             expectedWKC = (ec_group[0].outputsWKC * 2) + ec_group[0].inputsWKC;
-            printf("Calculated workcounter %d\n", expectedWKC);
             ec_slave[0].state = EC_STATE_OPERATIONAL;
             /* send one valid process data to make outputs in slaves happy*/
             ec_send_processdata();
@@ -100,9 +92,7 @@ int setup(char *ifname){
             ec_writestate(0);
             chk = 200;
             /* wait for all slaves to reach OP state */
-            do
-            {
-                printf("chk = %d", chk);
+            do {
                 ec_send_processdata();
                 ec_receive_processdata(EC_TIMEOUTRET);
                 ec_statecheck(0, EC_STATE_OPERATIONAL, 50000);
@@ -110,12 +100,13 @@ int setup(char *ifname){
             while (chk-- && (ec_slave[0].state != EC_STATE_OPERATIONAL));
 
             if (ec_slave[0].state == EC_STATE_OPERATIONAL){
-                printf("Operational state reached for all slaves.\n");
                 return 1;
             }
             else{
 
                 printf("Not all slaves reached operational state.\n");
+                return -1;
+                /*
                 ec_readstate();
 
                 for(i = 1; i<=ec_slavecount ; i++){
@@ -125,16 +116,19 @@ int setup(char *ifname){
                             i, ec_slave[i].state, ec_slave[i].ALstatuscode, ec_ALstatuscode2string(ec_slave[i].ALstatuscode));
                     }
                 }
+                */
             }
         }
         else{
             printf("No slaves found!\n");
+            return -2;
         }
     }
     else{
         printf("No socket connection on %s\nExecute as root\n",ifname);
+        return -3;
     }
-    exit(-1);
+    return -4;
 }
 
 

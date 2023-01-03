@@ -27,11 +27,10 @@ void add_timespec(struct timespec *ts, int64 addtime) {
 
 
 /* PI calculation to get linux time synced to DC time */
-void ec_sync(int64 reftime, int64 cycletime , int64 *offsettime) {
+void ec_sync(int64 reftime, int32 cycletime , int64 *offsettime) {
    static int64 integral = 0;
    int64 delta;
-   /* set linux sync point 50us later than DC sync, just as example */
-   delta = (reftime - 50000) % cycletime;
+   delta = reftime % cycletime;
    if(delta> (cycletime / 2)) { delta= delta - cycletime; }
    if(delta>0){ integral++; }
    if(delta<0){ integral--; }
@@ -40,19 +39,16 @@ void ec_sync(int64 reftime, int64 cycletime , int64 *offsettime) {
     * где A и B коэфициенты, которые зависят от железа 
     */
    *offsettime = -(delta / 700) - (integral / 20);
-   printf("%ld, %ld", delta, *offsettime); 
+   // printf("%ld, %ld, %ld \n", reftime, delta, *offsettime); 
    gl_delta = delta;
 }
 
 
-void rt_csp(PyArrayObject_coordinates *points) {
+void rt_csp(PyArrayObject_coordinates *points, int32 cycletime) {
 
     outPDO *out;
     struct timespec ts, tleft;
     toff = 0;
-    int64 cycletime;
-
-    cycletime = 22000000; /* cycletime in ns */
 
     clock_gettime(CLOCK_MONOTONIC, &ts);
     for (int i = 0; i < points->shape[1]; i++){
@@ -68,13 +64,12 @@ void rt_csp(PyArrayObject_coordinates *points) {
         }
 
         if (ec_slave[0].hasdc){
-           /* calulate toff to get linux time and DC synced */
-           ec_sync(ec_DCtime, cycletime, &toff);
+            /* calulate toff to get linux time and DC synced */
+            ec_sync(ec_DCtime, cycletime, &toff);
         }
 
         ec_send_processdata();
         ec_receive_processdata(EC_TIMEOUTRET);  
-        printf("\n");
     }
     PyArrayObject_Free(points);
 }

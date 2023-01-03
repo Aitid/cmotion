@@ -92,7 +92,7 @@ typedef enum {
 
 
 int slave_config(uint16 slave);
-int setup(char *ifname);
+int setup(char *ifname, int32 cycletime);
 int enable_csp_mode();
 void complete();
 
