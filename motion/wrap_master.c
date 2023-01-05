@@ -102,27 +102,20 @@ int setup(char *ifname, int32 cycletime){
                 return 1;
             }
             else{
+                /* Not all slaves reached operational state. */
                 return -1;
-                /*
-                ec_readstate();
-
-                for(i = 1; i<=ec_slavecount ; i++){
-
-                    if(ec_slave[i].state != EC_STATE_OPERATIONAL){
-                        printf("Slave %d State=0x%2.2x StatusCode=0x%4.4x : %s\n",
-                            i, ec_slave[i].state, ec_slave[i].ALstatuscode, ec_ALstatuscode2string(ec_slave[i].ALstatuscode));
-                    }
-                }
-                */
             }
         }
         else{
+            /* No slaves found */
             return -2;
         }
     }
     else{
+        /* No socket connection on {ifname}. Execute as root */
         return -3;
     }
+    /* Unknown error */
     return -4;
 }
 

@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
 
 #include "operation.h"
 #include "ethercat.h"
@@ -7,6 +9,14 @@
 
 
 int64 toff, gl_delta;
+volatile sig_atomic_t is_keyboard_interupt = 0;
+
+
+void keyboard_interrupt_handler(int signum) {
+    if (signum == SIGINT){
+        is_keyboard_interupt = 1;
+    }
+}
 
 
 /* add ns to timespec */
@@ -44,8 +54,9 @@ void ec_sync(int64 reftime, int32 cycletime , int64 *offsettime) {
 }
 
 
-void rt_csp(PyArrayObject_coordinates *points, int32 cycletime) {
+int rt_csp(PyArrayObject_coordinates *points, int32 cycletime) {
 
+    // signal(SIGINT, keyboard_interrupt_handler);
     outPDO *out;
     struct timespec ts, tleft;
     toff = 0;
@@ -53,6 +64,9 @@ void rt_csp(PyArrayObject_coordinates *points, int32 cycletime) {
     clock_gettime(CLOCK_MONOTONIC, &ts);
     for (int i = 0; i < points->shape[1]; i++){
 
+        if (is_keyboard_interupt == 1){
+            return 0;
+        }
         /* calculate next cycle start */
         add_timespec(&ts, cycletime + toff);
         /* wait to cycle start */
@@ -72,4 +86,6 @@ void rt_csp(PyArrayObject_coordinates *points, int32 cycletime) {
         ec_receive_processdata(EC_TIMEOUTRET);  
     }
     PyArrayObject_Free(points);
+    return 1;
 }
+

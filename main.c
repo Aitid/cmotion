@@ -36,14 +36,17 @@ int main(int argc, char *argv[]) {
         printf("ifname: %s arg 2: %s \n", argv[1], argv[2]);
         printf("cycletime: %d \n", cycletime);
 
-        setup(argv[1], cycletime);
+        if (setup(argv[1], cycletime) > 0){
 
-        PyArrayObject_coordinates p1;
-        p1 = generated_pulse();
+            PyArrayObject_coordinates p1;
+            p1 = generated_pulse();
 
-        enable_csp_mode();
-        rt_csp(&p1, cycletime);
-        complete();
+            enable_csp_mode();
+            rt_csp(&p1, cycletime);
+            complete();
+        }else{
+            printf("something wrong \n");
+        }
     }
     else {
         printf("Usage: mycsp ifname cycletime  \n");
