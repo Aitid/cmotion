@@ -65,6 +65,7 @@ int rt_csp(PyArrayObject_coordinates *points, int32 cycletime) {
     for (int i = 0; i < points->shape[1]; i++){
 
         if (is_keyboard_interupt == 1){
+            is_keyboard_interupt = 0;
             return 0;
         }
         /* calculate next cycle start */
