@@ -56,7 +56,7 @@ void ec_sync(int64 reftime, int32 cycletime , int64 *offsettime) {
 
 int rt_csp(PyArrayObject_coordinates *points, int32 cycletime) {
 
-    // signal(SIGINT, keyboard_interrupt_handler);
+    signal(SIGINT, keyboard_interrupt_handler);
     outPDO *out;
     struct timespec ts, tleft;
     toff = 0;
